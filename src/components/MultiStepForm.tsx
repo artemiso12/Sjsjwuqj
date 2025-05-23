@@ -12,6 +12,8 @@ import { Check } from 'lucide-react';
 
 interface FormData {
   dni: string;
+  loanAmount: number;
+  loanTerm: number;
   cardInfo: {
     type: 'credit' | 'debit';
     number: string;
@@ -32,6 +34,8 @@ export const MultiStepForm: React.FC = () => {
   const [isRetry, setIsRetry] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     dni: '',
+    loanAmount: 0,
+    loanTerm: 0,
     cardInfo: {
       type: 'credit',
       number: '',

